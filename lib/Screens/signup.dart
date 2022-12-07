@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_login/Screens/homeView.dart';
+import 'package:firebase_auth_login/Screens/signin.dart';
 import 'package:firebase_auth_login/custom_widget/reusable_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/basic.dart';
@@ -20,7 +21,7 @@ class _SignupViewState extends State<SignupView> {
   var nameController = TextEditingController(text: "name");
   var emailController = TextEditingController(text: "email");
   var passController = TextEditingController(text: "password");
-  late bool bRegistrationSuccess;
+  bool bLoding = false;
 
   @override
   Widget build(BuildContext context) {
@@ -78,26 +79,35 @@ class _SignupViewState extends State<SignupView> {
                 padding: const EdgeInsets.all(20),
                 child: reusableElevatedButton(
                   context: context,
-                  title: "Sign up",
+                  view: (bLoding)
+                      ? const CircularProgressIndicator()
+                      : const Text("Sign up"),
                   onTap: () {
                     if (_formKey.currentState!.validate()) return;
-                    bRegistrationSuccess = false;
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) => const MyHomePage(
-                    //             title: "Login with Firebase Auth")));
+                    bLoding = true;
+
                     FirebaseAuth.instance
                         .createUserWithEmailAndPassword(
                             email: emailController.text,
                             password: passController.text)
                         .then((value) {
-                      bRegistrationSuccess = true;
-                      print("Created New Account");
-                      // Navigator.push(context,
-                      //     MaterialPageRoute(builder: (context) => MyHomePage("L")));
+                      bLoding = false;
+
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('Registered successfully'),
+                        duration: Duration(seconds: 3),
+                      ));
+
+                      Navigator.pop(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SigninView()));
                     }).onError((error, stackTrace) {
-                      print("Error ${error.toString()}");
+                      bLoding = false;
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('Error while registring'),
+                        duration: Duration(seconds: 3),
+                      ));
                     });
                   },
                 ),

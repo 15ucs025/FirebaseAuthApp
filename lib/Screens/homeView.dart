@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_login/Screens/signin.dart';
 import 'package:flutter/material.dart';
 
@@ -31,7 +32,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pop(context);
+          FirebaseAuth.instance.signOut().then((value) {
+            Navigator.pop(context,
+                MaterialPageRoute(builder: (context) => const SigninView()));
+          });
         },
         tooltip: 'Sign out',
         child: const Icon(Icons.logout),

@@ -34,7 +34,7 @@ Padding reusableTextField(
 
 Container reusableElevatedButton(
     {required BuildContext context,
-    required String title,
+    required Widget? view,
     required Function onTap}) {
   return Container(
     width: MediaQuery.of(context).size.width,
@@ -42,15 +42,13 @@ Container reusableElevatedButton(
     margin: const EdgeInsets.fromLTRB(0, 10, 0, 20),
     decoration: BoxDecoration(borderRadius: BorderRadius.circular(90)),
     child: ElevatedButton(
-      onPressed: () {
-        onTap();
-      },
-      style: ButtonStyle(
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)))),
-      child: Text(
-        title,
-      ),
-    ),
+        onPressed: () {
+          onTap();
+        },
+        style: ButtonStyle(
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30)))),
+        child: view),
   );
 }

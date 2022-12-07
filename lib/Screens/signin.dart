@@ -3,9 +3,6 @@ import 'package:firebase_auth_login/Screens/homeView.dart';
 import 'package:firebase_auth_login/Screens/signup.dart';
 import 'package:firebase_auth_login/custom_widget/reusable_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/basic.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 class SigninView extends StatefulWidget {
   const SigninView({super.key});
@@ -18,7 +15,7 @@ class _SigninViewState extends State<SigninView> {
   final _formKey = GlobalKey<FormState>();
   var emailController = TextEditingController(text: "email");
   var passController = TextEditingController(text: "password");
-  late bool bRegistrationSuccess;
+  bool bLoding = false;
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +57,9 @@ class _SigninViewState extends State<SigninView> {
               ),
               reusableElevatedButton(
                 context: context,
-                title: "Sign in",
+                view: (bLoding)
+                    ? const CircularProgressIndicator()
+                    : const Text("Sign in"),
                 onTap: () {
                   // Navigator.push(
                   //     context,
@@ -68,20 +67,25 @@ class _SigninViewState extends State<SigninView> {
                   //         builder: (context) => const MyHomePage(
                   //             title: "Login with Firebase Auth")));
                   if (_formKey.currentState!.validate()) return;
-                  bRegistrationSuccess = false;
+                  bLoding = true;
                   FirebaseAuth.instance
                       .signInWithEmailAndPassword(
                           email: emailController.text,
                           password: passController.text)
                       .then((value) {
-                    bRegistrationSuccess = true;
+                    bLoding = false;
+
                     Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const MyHomePage(
                                 title: "Login with Firebase")));
                   }).onError((error, stackTrace) {
-                    print("Error ${error.toString()}");
+                    bLoding = false;
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Error while logging in'),
+                      duration: Duration(seconds: 3),
+                    ));
                   });
                 },
               ),
