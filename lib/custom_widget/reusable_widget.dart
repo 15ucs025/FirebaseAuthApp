@@ -1,29 +1,34 @@
 import 'package:flutter/material.dart';
 
-TextField reusableTextField(
+Padding reusableTextField(
     {required String text,
     required IconData icon,
     required TextEditingController controller,
+    String? Function(String?)? validation,
     bool isPasswordType = false}) {
-  return TextField(
-    controller: controller,
-    obscureText: isPasswordType,
-    enableSuggestions: !isPasswordType,
-    autocorrect: !isPasswordType,
-    decoration: InputDecoration(
-      prefixIcon: Icon(
-        icon,
+  return Padding(
+    padding: const EdgeInsets.all(20.0),
+    child: TextFormField(
+      controller: controller,
+      obscureText: isPasswordType,
+      enableSuggestions: !isPasswordType,
+      autocorrect: !isPasswordType,
+      decoration: InputDecoration(
+        prefixIcon: Icon(
+          icon,
+        ),
+        labelText: text,
+        filled: true,
+        floatingLabelBehavior: FloatingLabelBehavior.never,
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30.0),
+            borderSide: const BorderSide(width: 0, style: BorderStyle.none)),
       ),
-      labelText: text,
-      filled: true,
-      floatingLabelBehavior: FloatingLabelBehavior.never,
-      border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30.0),
-          borderSide: const BorderSide(width: 0, style: BorderStyle.none)),
+      keyboardType: isPasswordType
+          ? TextInputType.visiblePassword
+          : TextInputType.emailAddress,
+      validator: validation,
     ),
-    keyboardType: isPasswordType
-        ? TextInputType.visiblePassword
-        : TextInputType.emailAddress,
   );
 }
 

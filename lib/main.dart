@@ -1,4 +1,3 @@
-import 'package:firebase_auth_login/Screens/homeView.dart';
 import 'package:firebase_auth_login/Screens/signin.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';

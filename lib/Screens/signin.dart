@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_login/Screens/homeView.dart';
 import 'package:firebase_auth_login/Screens/signup.dart';
 import 'package:firebase_auth_login/custom_widget/reusable_widget.dart';
@@ -14,8 +15,10 @@ class SigninView extends StatefulWidget {
 }
 
 class _SigninViewState extends State<SigninView> {
+  final _formKey = GlobalKey<FormState>();
   var emailController = TextEditingController(text: "email");
   var passController = TextEditingController(text: "password");
+  late bool bRegistrationSuccess;
 
   @override
   Widget build(BuildContext context) {
@@ -24,54 +27,79 @@ class _SigninViewState extends State<SigninView> {
         title: const Text("Sign in"),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: reusableTextField(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              reusableTextField(
                 text: "Email",
                 controller: emailController,
                 icon: Icons.person_outline,
+                validation: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Email can not be empty";
+                  }
+                  return null;
+                },
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: reusableTextField(
+              reusableTextField(
                 text: "Password",
                 controller: passController,
                 icon: Icons.lock_outlined,
                 isPasswordType: true,
+                validation: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Email can not be empty";
+                  }
+                  if (value.length < 8) {
+                    return "Password must contain atleast 8 characters";
+                  }
+                  return null;
+                },
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: reusableElevatedButton(
+              reusableElevatedButton(
                 context: context,
                 title: "Sign in",
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const MyHomePage(
-                              title: "Login with Firebase Auth")));
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => const MyHomePage(
+                  //             title: "Login with Firebase Auth")));
+                  if (_formKey.currentState!.validate()) return;
+                  bRegistrationSuccess = false;
+                  FirebaseAuth.instance
+                      .signInWithEmailAndPassword(
+                          email: emailController.text,
+                          password: passController.text)
+                      .then((value) {
+                    bRegistrationSuccess = true;
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const MyHomePage(
+                                title: "Login with Firebase")));
+                  }).onError((error, stackTrace) {
+                    print("Error ${error.toString()}");
+                  });
                 },
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: TextButton(
-                child: const Text("Create a new account!"),
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              const SignupView(title: "Register")));
-                },
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: TextButton(
+                  child: const Text("Create a new account!"),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const SignupView(title: "Register")));
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
