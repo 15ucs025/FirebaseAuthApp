@@ -57,58 +57,66 @@ class _SignupViewState extends State<SignupView> {
                   return null;
                 },
               ),
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: reusableTextField(
-                  text: "Password",
-                  controller: passController,
-                  icon: Icons.lock_outlined,
-                  isPasswordType: true,
-                  validation: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Email can not be empty";
-                    }
-                    if (value.length < 8) {
-                      return "Password must contain atleast 8 characters";
-                    }
-                    return null;
-                  },
-                ),
+              reusableTextField(
+                text: "Password",
+                controller: passController,
+                icon: Icons.lock_outlined,
+                isPasswordType: true,
+                validation: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Email can not be empty";
+                  }
+                  if (value.length < 8) {
+                    return "Password must contain atleast 8 characters";
+                  }
+                  return null;
+                },
               ),
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: reusableElevatedButton(
                   context: context,
                   view: (bLoding)
-                      ? const CircularProgressIndicator()
+                      ? const CircularProgressIndicator(
+                          backgroundColor: Colors.white,
+                        )
                       : const Text("Sign up"),
                   onTap: () {
-                    if (_formKey.currentState!.validate()) return;
-                    bLoding = true;
+                    if (_formKey.currentState!.validate()) {
+                      setState(() {
+                        bLoding = true;
+                      });
 
-                    FirebaseAuth.instance
-                        .createUserWithEmailAndPassword(
-                            email: emailController.text,
-                            password: passController.text)
-                        .then((value) {
-                      bLoding = false;
+                      FirebaseAuth.instance
+                          .createUserWithEmailAndPassword(
+                              email: emailController.text,
+                              password: passController.text)
+                          .then((value) {
+                        setState(() {
+                          bLoding = false;
+                        });
 
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text('Registered successfully'),
-                        duration: Duration(seconds: 3),
-                      ));
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          content: Text('Registered successfully'),
+                          duration: Duration(seconds: 3),
+                        ));
 
-                      Navigator.pop(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const SigninView()));
-                    }).onError((error, stackTrace) {
-                      bLoding = false;
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text('Error while registring'),
-                        duration: Duration(seconds: 3),
-                      ));
-                    });
+                        Navigator.pop(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SigninView()));
+                      }).onError((error, stackTrace) {
+                        setState(() {
+                          bLoding = false;
+                        });
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          content: Text('Error while registring'),
+                          duration: Duration(seconds: 3),
+                        ));
+                      });
+                    }
                   },
                 ),
               ),

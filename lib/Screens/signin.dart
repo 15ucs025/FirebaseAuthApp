@@ -13,8 +13,8 @@ class SigninView extends StatefulWidget {
 
 class _SigninViewState extends State<SigninView> {
   final _formKey = GlobalKey<FormState>();
-  var emailController = TextEditingController(text: "email");
-  var passController = TextEditingController(text: "password");
+  var emailController = TextEditingController(text: "");
+  var passController = TextEditingController(text: "");
   bool bLoding = false;
 
   @override
@@ -55,42 +55,51 @@ class _SigninViewState extends State<SigninView> {
                   return null;
                 },
               ),
-              reusableElevatedButton(
-                context: context,
-                view: (bLoding)
-                    ? const CircularProgressIndicator()
-                    : const Text("Sign in"),
-                onTap: () {
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) => const MyHomePage(
-                  //             title: "Login with Firebase Auth")));
-                  if (_formKey.currentState!.validate()) return;
-                  bLoding = true;
-                  FirebaseAuth.instance
-                      .signInWithEmailAndPassword(
-                          email: emailController.text,
-                          password: passController.text)
-                      .then((value) {
-                    bLoding = false;
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: reusableElevatedButton(
+                  context: context,
+                  view: (bLoding)
+                      ? const CircularProgressIndicator(
+                          backgroundColor: Colors.white,
+                        )
+                      : const Text("Sign in"),
+                  onTap: () {
+                    if (_formKey.currentState!.validate()) {
+                      setState(() {
+                        bLoding = true;
+                      });
 
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const MyHomePage(
-                                title: "Login with Firebase")));
-                  }).onError((error, stackTrace) {
-                    bLoding = false;
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('Error while logging in'),
-                      duration: Duration(seconds: 3),
-                    ));
-                  });
-                },
+                      FirebaseAuth.instance
+                          .signInWithEmailAndPassword(
+                              email: emailController.text,
+                              password: passController.text)
+                          .then((value) {
+                        setState(() {
+                          bLoding = false;
+                        });
+
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const MyHomePage(
+                                    title: "Login with Firebase")));
+                      }).onError((error, stackTrace) {
+                        setState(() {
+                          bLoding = false;
+                        });
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          content: Text('Error while logging in'),
+                          duration: Duration(seconds: 3),
+                        ));
+                      });
+                    }
+                  },
+                ),
               ),
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20.0),
                 child: TextButton(
                   child: const Text("Create a new account!"),
                   onPressed: () {
